@@ -40,8 +40,26 @@ class BrickSetSpider(scrapy.Spider):
         NEXT_PAGE_SELECTOR = '.next a ::attr(href)'
         next_page = response.css(NEXT_PAGE_SELECTOR).extract_first()
         if next_page: 
+            print "next_page = ", next_page 
             yield scrapy.Request(
             	response.urljoin(next_page), 
             	callback = self.parse
             )
-            	
+        else:
+            NEXT_YEAR_SELECTOR = '.browselinks .col a ::attr(href)'
+            all_years = response.css(NEXT_YEAR_SELECTOR).extract()
+        
+            print "all years = ", all_years
+        
+            if len(all_years) > 2:
+            
+                next_year = all_years[-1]
+            
+                if next_year:
+                    print "next_year = ", next_year
+                    yield scrapy.Request(
+                    	response.urljoin(next_year), 
+                    	callback = self.parse
+                    )
+                else:
+                    print "End of program"
