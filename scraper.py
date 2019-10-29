@@ -21,12 +21,19 @@ class BrickSetSpider(scrapy.Spider):
             PIECES_SELECTOR = ".//dl[dt/text() = 'Pieces']/dd/a/text()"
             MINIFIGS_SELECTOR = ".//dl[dt/text() = 'Minifigs']/dd[2]/a/text()"
             IMAGE_SELECTOR = "img ::attr(src)"
+            RETAIL_PRICE_SELECTOR = ".//dl[dt/text() = 'RRP']/dd/text()"
+
+            price = "N/A"
+
+            if brickset.xpath(RETAIL_PRICE_SELECTOR).extract_first():
+                price = brickset.xpath(RETAIL_PRICE_SELECTOR).extract_first().split(",")[0]
 
             yield {
                 'name': brickset.css(NAME_SELECTOR).extract_first(),
                 'pieces': brickset.xpath(PIECES_SELECTOR).extract_first(),
                 'minifigs': brickset.xpath(MINIFIGS_SELECTOR).extract_first(),
                 'image': brickset.css(IMAGE_SELECTOR).extract_first(),
+                'price': price
             }
 
 
@@ -37,4 +44,4 @@ class BrickSetSpider(scrapy.Spider):
             	response.urljoin(next_page), 
             	callback = self.parse
             )
-       
+            	
